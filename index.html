@@ -70,22 +70,44 @@ kbd{font:11px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--mu);border
  .grab{display:block;width:38px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 0}
  .db{padding:16px 16px 40px}.db h2{font-size:18px}
 }
+.ab{background:var(--ac);color:#fff;border-color:transparent}.ab:hover{border-color:transparent;filter:brightness(1.08)}
+.sync{font-size:12px;height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel);cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--mu);flex:none}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--done)}.sync.dirty{color:var(--tx);border-color:color-mix(in srgb,var(--pending) 50%,var(--line))}.sync.dirty i{background:var(--pending)}
+.sync.err i{background:var(--pain)}
+.col.over{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 6%,var(--col))}.card.dragging{opacity:.45}
+.stp{display:flex;gap:6px;flex-wrap:wrap}.stp button{display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--panel);cursor:pointer;font-size:12.5px;color:var(--mu)}
+.stp button.on{border-color:var(--ac);color:var(--tx);background:color-mix(in srgb,var(--ac) 10%,var(--panel));font-weight:550}
+.ed{position:fixed;inset:0;z-index:30;display:none;align-items:flex-end;justify-content:center;background:rgba(10,10,15,.4)}.ed.on{display:flex}
+@media(min-width:721px){.ed{align-items:center}}
+.ef{background:var(--panel);width:min(560px,100%);max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;border:1px solid var(--line);box-shadow:var(--sh2);padding:16px 18px;padding-bottom:max(16px,env(safe-area-inset-bottom))}
+@media(min-width:721px){.ef{border-radius:16px}}
+.ef h2{font-size:17px;margin:0 0 12px}.ef label{display:block;font-size:12px;color:var(--mu);margin:12px 0 5px;font-weight:600}
+.ef input,.ef select,.ef textarea{width:100%;font:inherit;font-size:15px;color:var(--tx);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:9px 11px;outline:0}
+.ef textarea{min-height:76px;resize:vertical;line-height:1.6}
+.ef input:focus,.ef select:focus,.ef textarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 18%,transparent)}
+.eb{display:flex;gap:8px;margin-top:16px;align-items:center}.eb .ib{height:38px;padding:0 14px}
+.del{color:var(--pain)}.del.arm{background:var(--pain);color:#fff;border-color:transparent}
+.hint{font-size:12.5px;color:var(--mu);line-height:1.7;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:10px}.hint ol{margin:4px 0 0;padding-left:18px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:13px;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90vw}.toast.on{opacity:1}
+@media(max-width:720px){.top{flex-wrap:wrap}.top>div:nth-child(2){flex:1;min-width:0}.sub{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#add .lb{display:none}#add{min-width:36px;justify-content:center;font-size:16px}.sync{height:32px}}
+
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
-<header><div class="top"><div class="logo">琪</div><div><h1>工作看板</h1><div class="sub">腾讯云 CLS · 更新于 2026-10-12 09:32</div></div><div class="sp"></div>
+<header><div class="top"><div class="logo">琪</div><div><h1>工作看板</h1><div class="sub">腾讯云 CLS · 更新于 2026-10-12 09:42</div></div><div class="sp"></div>
 <label class="search"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" style="color:var(--fa)"><circle cx="7" cy="7" r="5"/><path d="m11 11 3.5 3.5"/></svg><input id="q" placeholder="搜索 to do…" autocomplete="off"><kbd class="hk">/</kbd></label>
-<button class="ib" id="th" title="切换主题 (T)">◐</button></div>
+<button class="sync" id="sync"><i></i>已同步</button><button class="ib ab" id="add" title="新建 (N)">＋<span class="lb"> 新建</span></button><button class="ib" id="th" title="切换主题 (T)">◐</button></div>
 <div class="bar"><div class="seg"><button id="gS" class="on">按进展</button><button id="gM">按模块</button></div><span class="dv"></span>
 <div id="sc" style="display:contents"></div><span class="dv"></span><div id="mc" style="display:contents"></div></div></header>
 <main class="board" id="board"></main>
 <div class="mask" id="mask"></div><aside class="dr" id="dr" aria-hidden="true"><div class="grab"></div><div class="dh"><span id="dst"></span><span class="id" id="did"></span><div class="sp"></div>
-<div class="nav"><button class="ib" id="pv" title="上一条 (K)">↑</button><button class="ib" id="nx" title="下一条 (J)">↓</button><button class="ib" id="cl" title="关闭 (Esc)">✕</button></div></div><div class="db" id="db"></div></aside>
-<div class="help"><span><kbd>/</kbd> 搜索</span><span><kbd>G</kbd> 分组</span><span><kbd>J</kbd><kbd>K</kbd> 切换</span><span><kbd>T</kbd> 主题</span><span><kbd>Esc</kbd> 关闭</span></div>
+<div class="nav"><button class="ib" id="ee" title="编辑 (E)">✎ 编辑</button><button class="ib" id="pv" title="上一条 (K)">↑</button><button class="ib" id="nx" title="下一条 (J)">↓</button><button class="ib" id="cl" title="关闭 (Esc)">✕</button></div></div><div class="db" id="db"></div></aside>
+<div class="ed" id="ed"><div class="ef" id="ef"></div></div><div class="toast" id="toast"></div>
+<div class="help"><span><kbd>/</kbd> 搜索</span><span><kbd>G</kbd> 分组</span><span><kbd>J</kbd><kbd>K</kbd> 切换</span><span><kbd>N</kbd> 新建</span><span><kbd>E</kbd> 编辑</span><span><kbd>T</kbd> 主题</span><span><kbd>Esc</kbd> 关闭</span></div>
 <script>
-const TODOS=[{"id": "T001", "title": "Agent可观测-自定义仪表盘", "module": "agent可观测", "status": "doing", "progress_note": "研发开发进度80%，用户验收中发现一些问题，下周调整", "requirement": "agent可观测官网控制台已有仪表盘，但不能完全契合用户诉求，用户仍需自定义。新增自定义仪表盘功能。", "pain_point": "现有仪表盘无法完全满足用户自定义需求。", "solution": "手动创建沿用CLS老一套交互；也可以让AI帮创建（类似CLS现有AI能力，用自然语言描述意图，AI分析后创建仪表盘）。", "updated_at": "2026-10-12"}, {"id": "T002", "title": "Agent可观测-AI网关demo上线CLS控制台", "module": "agent可观测", "status": "doing", "progress_note": "demo已构建完成，下周研发上线到CLS控制台", "requirement": "agent可观测与腾讯内部AI网关等云产品合作。agent可观测分两大模块：日志大盘（含仪表盘）和链路追踪与会话管理（从Trace/Session维度，瀑布图+列表呈现用户对话）。前者已上线。希望在CLS控制台上线AI网关demo，主动外推能力。", "pain_point": "AI网关能力需要主动外推；demo的资源管理逻辑冗余且体验差。", "solution": "CLS控制台新增概览tab，内含“Demo中心”，AI网关demo会上到这里。同时下掉该中心现有的重置资源/删除资源/开启demo等逻辑（原因：demo部署在客户账户上才需要这些操作），后续统一迁移到CLS demo域名，用户在Demo中心点击后跳转到CLS域名下的网站。", "updated_at": "2026-10-12"}];
+let TODOS=[{"id": "T001", "title": "Agent可观测-自定义仪表盘", "module": "agent可观测", "status": "doing", "progress_note": "研发开发进度80%，用户验收中发现一些问题，下周调整", "requirement": "agent可观测官网控制台已有仪表盘，但不能完全契合用户诉求，用户仍需自定义。新增自定义仪表盘功能。", "pain_point": "现有仪表盘无法完全满足用户自定义需求。", "solution": "手动创建沿用CLS老一套交互；也可以让AI帮创建（类似CLS现有AI能力，用自然语言描述意图，AI分析后创建仪表盘）。", "updated_at": "2026-10-12"}, {"id": "T002", "title": "Agent可观测-AI网关demo上线CLS控制台", "module": "agent可观测", "status": "doing", "progress_note": "demo已构建完成，下周研发上线到CLS控制台", "requirement": "agent可观测与腾讯内部AI网关等云产品合作。agent可观测分两大模块：日志大盘（含仪表盘）和链路追踪与会话管理（从Trace/Session维度，瀑布图+列表呈现用户对话）。前者已上线。希望在CLS控制台上线AI网关demo，主动外推能力。", "pain_point": "AI网关能力需要主动外推；demo的资源管理逻辑冗余且体验差。", "solution": "CLS控制台新增概览tab，内含“Demo中心”，AI网关demo会上到这里。同时下掉该中心现有的重置资源/删除资源/开启demo等逻辑（原因：demo部署在客户账户上才需要这些操作），后续统一迁移到CLS demo域名，用户在Demo中心点击后跳转到CLS域名下的网站。", "updated_at": "2026-10-12"}];
 const ST=[["doing","Doing","正在做"],["pending","Pending","挂起"],["todo","To do","待开始"],["done","Done","已完成"]];
 const SN=Object.fromEntries(ST.map(s=>[s[0],s]));
-const MODS=[...new Set(TODOS.map(t=>t.module))];
+let MODS=[...new Set(TODOS.map(t=>t.module))];
 const PAL=["#6b6fd8","#4a8fb8","#5a9a85","#b9875a","#a073c4","#c27585","#6e8aa8"];
 const mc=m=>PAL[[...m].reduce((a,c)=>a+c.charCodeAt(0),0)%PAL.length];
 const $=id=>document.getElementById(id);
@@ -104,20 +126,22 @@ function chips(){
  document.querySelectorAll("[data-mod]").forEach(b=>b.onclick=()=>{S.mod=S.mod===b.dataset.mod?"":b.dataset.mod;render()});
  $("gS").className=S.group==="status"?"on":"";$("gM").className=S.group==="module"?"on":""}
 const mtag=m=>`<span class="tag"><i style="background:${mc(m)}"></i>${esc(m)}</span>`;
-function card(t,i){const p=pct(t);return `<article class="card ${S.cur===t.id?"sel":""}" data-id="${esc(t.id)}" style="animation-delay:${i*40}ms" tabindex="0">
+function card(t,i){const p=pct(t);return `<article class="card ${S.cur===t.id?"sel":""}" data-id="${esc(t.id)}" style="animation-delay:${i*40}ms" tabindex="0" ${S.group==="status"&&matchMedia("(hover:hover)").matches?'draggable="true"':""}>
 <div class="id">${icon(t.status,13)}${esc(t.id)}</div><div class="t">${esc(t.title)}</div>${t.progress_note?`<div class="nt">${esc(t.progress_note)}</div>`:""}
 ${p!=null?`<div class="pb"><span style="width:${p}%"></span></div>`:""}<div class="meta">${S.group==="status"?mtag(t.module):`<span class="tag">${icon(t.status,11)}${SN[t.status]?.[1]||esc(t.status)}</span>`}<span class="date">${esc((t.updated_at||"").slice(5))}</span></div></article>`}
 function render(){chips();const q=S.q.trim().toLowerCase();
  const L=TODOS.filter(t=>(!S.st||t.status===S.st)&&(!S.mod||t.module===S.mod)&&(!q||[t.id,t.title,t.module,t.requirement,t.pain_point,t.solution,t.progress_note].join(" ").toLowerCase().includes(q)));
  const cols=S.group==="status"?ST.map(([k,e,c])=>[`${icon(k)}<span>${e}</span><span style="color:var(--fa);font-weight:500">${c}</span>`,L.filter(t=>t.status===k)]):MODS.map(m=>[`<i style="width:9px;height:9px;border-radius:3px;background:${mc(m)}"></i><span>${esc(m)}</span>`,L.filter(t=>t.module===m)]);
  S.vis=cols.flatMap(c=>c[1]).map(t=>t.id);let i=0;
- $("board").innerHTML=cols.map(([h,ts])=>`<section class="col"><div class="ch">${h}<span class="n">${ts.length}</span></div>${ts.map(t=>card(t,i++)).join("")||'<div class="empty">暂无</div>'}</section>`).join("");
+ const keys=S.group==="status"?ST.map(s=>s[0]):[];
+ $("board").innerHTML=cols.map(([h,ts],ci)=>`<section class="col"${keys[ci]?` data-st="${keys[ci]}"`:""}><div class="ch">${h}<span class="n">${ts.length}</span></div>${ts.map(t=>card(t,i++)).join("")||'<div class="empty">暂无</div>'}</section>`).join("");
  document.querySelectorAll(".card").forEach(c=>{c.onclick=()=>openD(c.dataset.id);c.onkeydown=e=>{if(e.key==="Enter")openD(c.dataset.id)}})}
 function sec(n,c,col,txt,cls=""){return `<div class="sec ${cls}"><h3><span style="background:${col}">${c}</span>${n}</h3><p>${esc(txt)||"—"}</p></div>`}
 function openD(id){const t=TODOS.find(x=>x.id===id);if(!t)return;S.cur=id;const s=SN[t.status]||[t.status,t.status,""];const p=pct(t);
  $("dst").innerHTML=icon(t.status,16);$("did").textContent=t.id;
- $("db").innerHTML=`<h2>${esc(t.title)}</h2><dl class="props"><dt>进展</dt><dd>${icon(t.status)}${s[1]} · ${s[2]}${p!=null?` <span style="color:var(--mu)">（${p}%）</span>`:""}</dd><dt>模块</dt><dd>${mtag(t.module)}</dd><dt>更新</dt><dd>${esc(t.updated_at||"—")}</dd></dl>
+ $("db").innerHTML=`<h2>${esc(t.title)}</h2><dl class="props"><dt>进展</dt><dd><div class="stp" id="dS">${ST.map(([k,e])=>`<button data-k="${k}" class="${t.status===k?"on":""}">${icon(k,12)}${e}</button>`).join("")}</div>${p!=null?` <span style="color:var(--mu)">${p}%</span>`:""}</dd><dt>模块</dt><dd>${mtag(t.module)}</dd><dt>更新</dt><dd>${esc(t.updated_at||"—")}</dd></dl>
  ${sec("进展备注","◷","var(--doing)",t.progress_note,"note")}${sec("需求","需","var(--ac)",t.requirement)}${sec("用户痛点","痛","var(--pain)",t.pain_point)}${sec("方案","案","var(--done)",t.solution)}`;
+ document.querySelectorAll("#dS button").forEach(b=>b.onclick=()=>setStatus(id,b.dataset.k));
  $("dr").classList.add("on");$("mask").classList.add("on");$("dr").setAttribute("aria-hidden","false");
  if(location.hash!=="#"+id)history.replaceState(null,"","#"+id);document.querySelectorAll(".card").forEach(c=>c.classList.toggle("sel",c.dataset.id===id))}
 function closeD(){S.cur=null;$("dr").classList.remove("on");$("mask").classList.remove("on");$("dr").setAttribute("aria-hidden","true");history.replaceState(null,"",location.pathname+location.search);document.querySelectorAll(".card.sel").forEach(c=>c.classList.remove("sel"))}
@@ -129,11 +153,99 @@ $("gS").onclick=()=>{S.group=localStorage.kbG="status";render()};$("gM").onclick
 $("q").oninput=e=>{S.q=e.target.value;render()};$("mask").onclick=closeD;$("cl").onclick=closeD;$("pv").onclick=()=>step(-1);$("nx").onclick=()=>step(1);
 let y0=null;$("dr").addEventListener("touchstart",e=>{if($("db").scrollTop<=0)y0=e.touches[0].clientY},{passive:true});
 $("dr").addEventListener("touchend",e=>{if(y0!=null&&e.changedTouches[0].clientY-y0>90&&innerWidth<=720)closeD();y0=null});
-addEventListener("keydown",e=>{const inp=e.target.tagName==="INPUT";if(e.key==="Escape"){if(inp)e.target.blur();else if(S.cur)closeD();return}
+$("ee").onclick=()=>S.cur&&openE(S.cur);
+addEventListener("keydown",e=>{const inp=/INPUT|TEXTAREA|SELECT/.test(e.target.tagName);if($("ed").classList.contains("on")){if(e.key==="Escape")closeE();return}if(e.key==="Escape"){if(inp)e.target.blur();else if(S.cur)closeD();return}
  if(inp||e.metaKey||e.ctrlKey||e.altKey)return;const k=e.key.toLowerCase();
  if(k==="/"){e.preventDefault();$("q").focus()}else if(k==="g"){S.group=localStorage.kbG=S.group==="status"?"module":"status";render()}
- else if(k==="t")$("th").click();else if(k==="j")step(1);else if(k==="k")step(-1)});
+ else if(k==="t")$("th").click();else if(k==="n"){e.preventDefault();openE(null)}else if(k==="e"&&S.cur){e.preventDefault();openE(S.cur)}else if(k==="j")step(1);else if(k==="k")step(-1)});
 const fromHash=()=>{const h=decodeURIComponent(location.hash.slice(1));if(h&&TODOS.some(t=>t.id===h))openD(h);else if(S.cur)closeD()};
-addEventListener("hashchange",fromHash);render();fromHash();
+addEventListener("hashchange",fromHash);
+// ---- 编辑 + 同步（GitHub Contents API）----
+const REPO="Song20011219/todo-kanban",FILE="todos.json",API=`https://api.github.com/repos/${REPO}/contents/${FILE}`;
+const SYNC={base:null,dirty:false,err:""};
+const LS={get tok(){return localStorage.kbTok||""},set tok(v){v?localStorage.kbTok=v:localStorage.removeItem("kbTok")}};
+const today=()=>new Date(Date.now()+8*3600e3).toISOString().slice(0,10);
+const toB64=s=>{const b=new TextEncoder().encode(s);let r="";for(let i=0;i<b.length;i+=8192)r+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(r)};
+const fromB64=c=>new TextDecoder().decode(Uint8Array.from(atob(c.replace(/\s/g,"")),x=>x.charCodeAt(0)));
+async function blobSha(text){if(!crypto.subtle)return null;const b=new TextEncoder().encode(text),h=new TextEncoder().encode(`blob ${b.length}\0`),a=new Uint8Array(h.length+b.length);a.set(h);a.set(b,h.length);
+ return[...new Uint8Array(await crypto.subtle.digest("SHA-1",a))].map(x=>x.toString(16).padStart(2,"0")).join("")}
+const serialize=()=>JSON.stringify(TODOS,null,1)+"\n";
+function toast(m,ms=2600){const t=$("toast");t.textContent=m;t.classList.add("on");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("on"),ms)}
+function badge(){const b=$("sync");b.className="sync"+(SYNC.err?" err":SYNC.dirty?" dirty":"");
+ b.innerHTML=`<i><\/i>${SYNC.err?"同步失败 · 重试":SYNC.dirty?(LS.tok?"未同步 · 保存":"未同步 · 设置保存"):"已同步"}`}
+function draft(){localStorage.kbDraft=JSON.stringify({todos:TODOS,base:SYNC.base});SYNC.dirty=true;badge()}
+function mutate(fn){fn();draft();render();if(S.cur)openD(S.cur)}
+function setTodos(arr){TODOS=arr;MODS=[...new Set(TODOS.map(t=>t.module))]}
+async function remoteGet(){const r=await fetch(API+"?ref=main",{headers:{Authorization:"Bearer "+LS.tok,Accept:"application/vnd.github+json"},cache:"no-store"});
+ if(!r.ok)throw Object.assign(new Error("读取失败 "+r.status),{status:r.status});const j=await r.json();return{sha:j.sha,text:fromB64(j.content)}}
+async function load(){let got=null;
+ try{if(LS.tok)got=await remoteGet();}catch(e){}
+ if(!got)try{const r=await fetch(FILE+"?t="+Date.now(),{cache:"no-store"});if(r.ok){const text=await r.text();got={text,sha:await blobSha(text)}}}catch(e){}
+ if(got){try{const arr=JSON.parse(got.text);if(Array.isArray(arr)){SYNC.base=got.sha;
+   const last=JSON.parse(localStorage.kbLast||"null");   // Pages 缓存可能滞后：刚保存过的版本优先
+   if(!LS.tok&&last&&last.sha!==got.sha&&Date.now()-last.t<15*60e3)setTodos(last.todos),SYNC.base=last.sha;else setTodos(arr)}}catch(e){}}
+ const d=JSON.parse(localStorage.kbDraft||"null");
+ if(d&&Array.isArray(d.todos)){setTodos(d.todos);SYNC.dirty=true;if(got&&d.base&&d.base!==SYNC.base)toast("远端已有新版本，你本地有未同步修改；保存时会提示处理",4500)}
+ badge();render();fromHash()}
+async function save(){if(!LS.tok){openTok();return}
+ const b=$("sync");b.innerHTML="<i><\/i>保存中…";
+ try{let cur=null;try{cur=await remoteGet()}catch(e){if(e.status!==404)throw e}
+  if(cur&&SYNC.base&&cur.sha!==SYNC.base){
+   if(!confirm("仓库里的 todos.json 在你编辑后已被改过（可能是另一台设备或 Todo bot 更新）。\n确定：用你的版本覆盖\n取消：不保存"))
+    {if(confirm("要放弃本地修改、加载仓库最新版本吗？")){localStorage.removeItem("kbDraft");setTodos(JSON.parse(cur.text));SYNC.base=cur.sha;SYNC.dirty=false;SYNC.err="";badge();render()}else badge();return}}
+  const body={message:"web edit "+new Date().toISOString(),content:toB64(serialize()),branch:"main"};if(cur)body.sha=cur.sha;
+  const r=await fetch(API,{method:"PUT",headers:{Authorization:"Bearer "+LS.tok,Accept:"application/vnd.github+json","Content-Type":"application/json"},body:JSON.stringify(body)});
+  if(!r.ok){const m={401:"token 无效或已过期",403:"token 没有该仓库 Contents 写权限",404:"找不到仓库或 token 无权访问",409:"版本冲突，请刷新后重试",422:"版本冲突（sha 不匹配），请刷新后重试"}[r.status]||("HTTP "+r.status);throw new Error(m)}
+  const j=await r.json();SYNC.base=j.content.sha;SYNC.dirty=false;SYNC.err="";localStorage.removeItem("kbDraft");
+  localStorage.kbLast=JSON.stringify({sha:SYNC.base,todos:TODOS,t:Date.now()});badge();toast("已保存到仓库，网页约 1 分钟后对其他设备生效")}
+ catch(e){SYNC.err=e.message;badge();toast("保存失败："+e.message+"（修改仍保存在本机）",5000)}}
+// 编辑表单
+let EID=null;
+function modOpts(sel){return MODS.map(m=>`<option ${m===sel?"selected":""}>${esc(m)}<\/option>`).join("")+`<option value="__new">＋ 新模块…<\/option>`}
+function openE(id){EID=id;const t=TODOS.find(x=>x.id===id)||{title:"",module:S.mod||MODS[0]||"",status:S.st||"todo",progress_note:"",requirement:"",pain_point:"",solution:""};
+ $("ef").innerHTML=`<h2>${id?"编辑 "+esc(id):"新建 to do"}<\/h2>
+ <label>标题<\/label><input id="fT" value="${esc(t.title)}" placeholder="例如：采集-xxx 支持">
+ <label>模块<\/label><select id="fM">${modOpts(t.module)}<\/select><input id="fMn" placeholder="新模块名，如：采集" style="display:none;margin-top:6px">
+ <label>状态<\/label><div class="stp" id="fS">${ST.map(([k,e,c])=>`<button type="button" data-k="${k}" class="${t.status===k?"on":""}">${icon(k,13)}${e}<\/button>`).join("")}<\/div>
+ <label>进展备注<\/label><textarea id="fP" placeholder="如：研发进度 60%，下周提测">${esc(t.progress_note)}<\/textarea>
+ <label>需求<\/label><textarea id="fR">${esc(t.requirement)}<\/textarea>
+ <label>用户痛点<\/label><textarea id="fN">${esc(t.pain_point)}<\/textarea>
+ <label>方案<\/label><textarea id="fA">${esc(t.solution)}<\/textarea>
+ <div class="eb">${id?'<button class="ib del" id="fD">删除<\/button>':""}<div class="sp"><\/div><button class="ib" id="fC">取消<\/button><button class="ib ab" id="fO">完成<\/button><\/div>`;
+ $("ed").classList.add("on");
+ $("fM").onchange=e=>{$("fMn").style.display=e.target.value==="__new"?"block":"none";if(e.target.value==="__new")$("fMn").focus()};
+ if(!MODS.length){$("fM").value="__new";$("fMn").style.display="block"}
+ document.querySelectorAll("#fS button").forEach(b=>b.onclick=()=>document.querySelectorAll("#fS button").forEach(x=>x.classList.toggle("on",x===b)));
+ $("fC").onclick=closeE;
+ if(id)$("fD").onclick=e=>{const b=e.currentTarget;if(!b.classList.contains("arm")){b.classList.add("arm");b.textContent="再点一次确认删除";setTimeout(()=>{b.classList.remove("arm");b.textContent="删除"},4000);return}
+  closeE();closeD();mutate(()=>setTodos(TODOS.filter(x=>x.id!==id)));toast("已删除 "+id)};
+ $("fO").onclick=()=>{const title=$("fT").value.trim();let mod=$("fM").value==="__new"?$("fMn").value.trim():$("fM").value;
+  if(!title){$("fT").focus();toast("请填写标题");return}if(!mod){$("fMn").focus();toast("请填写模块名");return}
+  const v={title,module:mod,status:document.querySelector("#fS button.on")?.dataset.k||"todo",progress_note:$("fP").value.trim(),requirement:$("fR").value.trim(),pain_point:$("fN").value.trim(),solution:$("fA").value.trim(),updated_at:today()};
+  let nid=id;mutate(()=>{if(id)Object.assign(TODOS.find(x=>x.id===id),v);else{const n=Math.max(0,...TODOS.map(x=>+(String(x.id).match(/\d+/)||[0])[0]))+1;nid="T"+String(n).padStart(3,"0");TODOS.push({id:nid,...v})}setTodos(TODOS)});
+  closeE();openD(nid);toast(LS.tok?"已修改，点右上角“保存”同步":"已暂存在本机（未同步）")};
+ if(!id)setTimeout(()=>$("fT").focus(),50)}
+function closeE(){$("ed").classList.remove("on")}
+function setStatus(id,k){const t=TODOS.find(x=>x.id===id);if(!t||t.status===k)return;mutate(()=>{t.status=k;t.updated_at=today()})}
+function openTok(){$("ef").innerHTML=`<h2>保存到 GitHub<\/h2>
+ <div class="hint">首次保存需要一个只授权本仓库的 token，只保存在这台设备的浏览器里，不会上传到别处。<ol>
+ <li>打开 <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new<\/a><\/li>
+ <li>Repository access 选 <b>Only select repositories<\/b> → <b>todo-kanban<\/b><\/li>
+ <li>Permissions → Repository permissions → <b>Contents: Read and write<\/b>，其他不选<\/li>
+ <li>生成后复制 <code>github_pat_…<\/code> 粘贴到下面<\/li><\/ol><\/div>
+ <label>Fine-grained token<\/label><input id="fK" type="password" autocomplete="off" placeholder="github_pat_…" value="">
+ <div class="eb">${LS.tok?'<button class="ib del" id="fX">清除本机 token<\/button>':""}<div class="sp"><\/div><button class="ib" id="fC">取消<\/button><button class="ib ab" id="fO">保存并同步<\/button><\/div>`;
+ $("ed").classList.add("on");$("fC").onclick=closeE;if(LS.tok)$("fX").onclick=()=>{LS.tok="";closeE();badge();toast("已清除本机 token")};
+ $("fO").onclick=()=>{const v=$("fK").value.trim();if(!v){$("fK").focus();return}LS.tok=v;closeE();save()}}
+$("sync").onclick=()=>{if(SYNC.dirty||SYNC.err)save();else openTok()};
+$("add").onclick=()=>openE(null);$("ed").onclick=e=>{if(e.target.id==="ed")closeE()};
+// 拖拽改状态（桌面，按进展分组时）
+document.addEventListener("dragstart",e=>{const c=e.target.closest?.(".card");if(!c)return;e.dataTransfer.setData("text/plain",c.dataset.id);c.classList.add("dragging")});
+document.addEventListener("dragend",e=>{document.querySelectorAll(".dragging,.over").forEach(x=>x.classList.remove("dragging","over"))});
+document.addEventListener("dragover",e=>{const col=e.target.closest?.(".col[data-st]");if(!col)return;e.preventDefault();document.querySelectorAll(".col.over").forEach(x=>x!==col&&x.classList.remove("over"));col.classList.add("over")});
+document.addEventListener("drop",e=>{const col=e.target.closest?.(".col[data-st]");if(!col)return;e.preventDefault();col.classList.remove("over");setStatus(e.dataTransfer.getData("text/plain"),col.dataset.st)});
+addEventListener("beforeunload",e=>{if(SYNC.dirty&&LS.tok){e.preventDefault();e.returnValue=""}});
+load();
+
 if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
 </script></body></html>
